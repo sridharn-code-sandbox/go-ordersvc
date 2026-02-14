@@ -18,29 +18,38 @@ import "time"
 
 // OrderResponse represents an order in HTTP responses
 type OrderResponse struct {
-	ID         string      `json:"id"`
-	CustomerID string      `json:"customer_id"`
-	Items      []OrderItem `json:"items"`
-	Status     string      `json:"status"`
-	Total      float64     `json:"total"`
-	CreatedAt  time.Time   `json:"created_at"`
-	UpdatedAt  time.Time   `json:"updated_at"`
+	ID         string              `json:"id"`
+	CustomerID string              `json:"customer_id"`
+	Items      []OrderItemResponse `json:"items"`
+	Status     string              `json:"status"`
+	Total      float64             `json:"total"`
+	Version    int                 `json:"version"`
+	CreatedAt  time.Time           `json:"created_at"`
+	UpdatedAt  time.Time           `json:"updated_at"`
 }
 
-// PaginatedOrdersResponse represents a paginated list of orders
-type PaginatedOrdersResponse struct {
-	Data       []OrderResponse `json:"data"`
-	Page       int             `json:"page"`
-	PageSize   int             `json:"page_size"`
-	TotalCount int64           `json:"total_count"`
-	TotalPages int             `json:"total_pages"`
+// OrderItemResponse represents an item in an order response
+type OrderItemResponse struct {
+	ID        string  `json:"id"`
+	ProductID string  `json:"product_id"`
+	Name      string  `json:"name"`
+	Quantity  int     `json:"quantity"`
+	Price     float64 `json:"price"`
+	Subtotal  float64 `json:"subtotal"`
+}
+
+// ListOrdersResponse represents a paginated list of orders (ADR-0002 format)
+type ListOrdersResponse struct {
+	Orders []OrderResponse `json:"orders"`
+	Total  int64           `json:"total"`
+	Limit  int             `json:"limit"`
+	Offset int             `json:"offset"`
 }
 
 // ErrorResponse represents an error response
 type ErrorResponse struct {
-	Error   string            `json:"error"`
-	Message string            `json:"message"`
-	Details map[string]string `json:"details,omitempty"`
+	Error string `json:"error"`
+	Code  string `json:"code,omitempty"`
 }
 
 // HealthResponse represents a health check response

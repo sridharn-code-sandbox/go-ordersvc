@@ -15,23 +15,34 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
+// HealthChecker defines the interface for checking service health
+type HealthChecker interface {
+	Ping(ctx context.Context) error
+}
+
 // HealthHandler handles health check endpoints
+// CONSTRAINT: Health endpoints must not require authentication (ADR-0002)
 type HealthHandler struct {
-	version string
+	version   string
+	dbChecker HealthChecker
 }
 
 // NewHealthHandler creates a new health handler
-func NewHealthHandler(version string) *HealthHandler {
+func NewHealthHandler(version string, dbChecker HealthChecker) *HealthHandler {
 	return &HealthHandler{
-		version: version,
+		version:   version,
+		dbChecker: dbChecker,
 	}
 }
 
-// Healthz handles liveness probe
+// Healthz handles liveness probe GET /healthz
+// Returns 200 if server is alive
 func (h *HealthHandler) Healthz(w http.ResponseWriter, r *http.Request) {
 	response := HealthResponse{
 		Status:  "ok",
@@ -43,22 +54,48 @@ func (h *HealthHandler) Healthz(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		return
+	}
 }
 
-// Readyz handles readiness probe
+// Readyz handles readiness probe GET /readyz
+// Returns 200 if all dependencies are healthy, 503 otherwise
 func (h *HealthHandler) Readyz(w http.ResponseWriter, r *http.Request) {
-	// TODO: check database and redis connections
+	checks := make(map[string]string)
+	allHealthy := true
+
+	// Check database connection
+	if h.dbChecker != nil {
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
+		if err := h.dbChecker.Ping(ctx); err != nil {
+			checks["database"] = "unhealthy: " + err.Error()
+			allHealthy = false
+		} else {
+			checks["database"] = "ok"
+		}
+	} else {
+		checks["database"] = "not configured"
+	}
+
+	status := "ok"
+	httpStatus := http.StatusOK
+	if !allHealthy {
+		status = "unhealthy"
+		httpStatus = http.StatusServiceUnavailable
+	}
+
 	response := HealthResponse{
-		Status:  "ok",
+		Status:  status,
 		Version: h.version,
-		Checks: map[string]string{
-			"database": "ok",
-			"redis":    "ok",
-		},
+		Checks:  checks,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	w.WriteHeader(httpStatus)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		return
+	}
 }

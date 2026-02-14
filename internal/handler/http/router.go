@@ -15,25 +15,29 @@
 package http
 
 import (
+	"log/slog"
+
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/nsridhar76/go-ordersvc/internal/middleware"
 )
 
 // NewRouter creates a new Chi router with all routes configured
-func NewRouter(orderHandler *OrderHandler, healthHandler *HealthHandler) *chi.Mux {
+// CONSTRAINT: Health endpoints must not require authentication (ADR-0002)
+func NewRouter(orderHandler *OrderHandler, healthHandler *HealthHandler, logger *slog.Logger) *chi.Mux {
 	r := chi.NewRouter()
 
-	// Middleware
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	// Middleware stack
+	r.Use(chimiddleware.RequestID)
+	r.Use(chimiddleware.RealIP)
+	r.Use(middleware.Logging(logger))
+	r.Use(chimiddleware.Recoverer)
 
-	// Health checks
+	// Health checks (outside any auth middleware)
 	r.Get("/healthz", healthHandler.Healthz)
 	r.Get("/readyz", healthHandler.Readyz)
 
-	// Order routes
+	// Order routes with /api/v1 prefix
 	orderHandler.RegisterRoutes(r)
 
 	return r
