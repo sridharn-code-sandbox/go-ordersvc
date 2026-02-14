@@ -1,4 +1,4 @@
-# ADR-0002: Use Optimistic Locking for Concurrent Order Updates
+# ADR-0003: Use Optimistic Locking for Concurrent Order Updates
 
 ## Status
 
@@ -200,3 +200,4 @@ version INTEGER  -- Nullable!
 - **2026-02-14:** Initial creation during day 1 implementation
 - **2026-02-14:** Status set to Accepted after implementation and testing
 - **2026-02-14:** Renumbered from ADR-0001 to ADR-0002 to make room for Clean Architecture as foundational decision
+- **2026-02-14:** Renumbered from ADR-0002 to ADR-0003 to make room for Order Details API

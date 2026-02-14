@@ -1,8 +1,8 @@
 # go-ordersvc Makefile
 
 BINARY_NAME := ordersvc
-MODULE := github.com/<user>/go-ordersvc
-REGISTRY := ghcr.io/<user>
+MODULE := github.com/nsridhar76/go-ordersvc
+REGISTRY ?= ghcr.io/nsridhar76
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COVERAGE_FILE := coverage.out
 
@@ -14,7 +14,7 @@ export GOOS := darwin
 LDFLAGS := -ldflags "-s -w -X main.version=$(VERSION)"
 
 .PHONY: all build run clean fmt vet lint sec vuln secrets test test-integration cover \
-        docker docker-push scan compose-up compose-down k8s-lint k8s-deploy k8s-status \
+        docker docker-push scan compose-up compose-down compose-logs k8s-lint k8s-deploy k8s-status \
         proto drift-check ci help
 
 all: build ## Default target
@@ -78,7 +78,7 @@ cover: test ## Open coverage report in browser
 # ============================================================================
 
 docker: ## Build Docker image (ARM64)
-	docker build --platform linux/arm64 -t $(REGISTRY)/$(BINARY_NAME):$(VERSION) .
+	docker build --platform linux/arm64 -f deploy/docker/Dockerfile -t $(REGISTRY)/$(BINARY_NAME):$(VERSION) .
 
 docker-push: ## Push to ghcr.io
 	docker push $(REGISTRY)/$(BINARY_NAME):$(VERSION)
@@ -90,11 +90,17 @@ scan: ## Scan Docker image with Trivy
 # Docker Compose
 # ============================================================================
 
-compose-up: ## Start Postgres + Redis + Kafka
-	docker compose up -d
+compose-up: ## Start Postgres + Redis + ordersvc
+	docker compose -f deploy/docker/docker-compose.yml up -d --build
+	@echo "Waiting for services to be healthy..."
+	@sleep 5
+	@docker compose -f deploy/docker/docker-compose.yml ps
 
-compose-down: ## Stop compose services
-	docker compose down -v
+compose-down: ## Stop compose services and remove volumes
+	docker compose -f deploy/docker/docker-compose.yml down -v
+
+compose-logs: ## Show compose service logs
+	docker compose -f deploy/docker/docker-compose.yml logs -f
 
 # ============================================================================
 # Kubernetes
@@ -128,10 +134,27 @@ proto: ## Generate protobuf/gRPC code
 
 drift-check: ## Verify no config drift from ADRs
 	@echo "==> Running ADR constraint checks..."
-	@echo "Checking ADR-0001 CONSTRAINT: Handlers must not import database packages..."
-	@grep -r "github.com/jackc/pgx\|database/sql" internal/handler/ && \
+	@echo ""
+	@echo "ADR-0001 CONSTRAINT: Handlers must not import database packages..."
+	@grep -rn "github.com/jackc/pgx\|database/sql" internal/handler/ && \
 		{ echo "FAIL: Handler imports database packages (violates ADR-0001)"; exit 1; } || \
 		echo "PASS: No database imports in handlers"
+	@echo ""
+	@echo "ADR-0001 CONSTRAINT: Service must not import postgres package..."
+	@grep -rn "internal/repository/postgres" internal/service/ && \
+		{ echo "FAIL: Service imports concrete postgres (violates ADR-0001)"; exit 1; } || \
+		echo "PASS: Service uses repository interface only"
+	@echo ""
+	@echo "ADR-0001 CONSTRAINT: Repository must not import handler/service..."
+	@grep -rn "internal/handler\|internal/service" internal/repository/ && \
+		{ echo "FAIL: Repository imports handler/service (violates ADR-0001)"; exit 1; } || \
+		echo "PASS: Repository has no handler/service imports"
+	@echo ""
+	@echo "ADR-0002 CONSTRAINT: API routes must use /api/v1 prefix..."
+	@grep -q 'r.Route("/api/v1/orders"' internal/handler/http/order_handler.go && \
+		echo "PASS: Order routes use /api/v1 prefix" || \
+		{ echo "FAIL: Routes missing /api/v1/orders prefix (violates ADR-0002)"; exit 1; }
+	@echo ""
 	@echo "==> All drift checks passed"
 
 # ============================================================================

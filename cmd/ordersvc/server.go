@@ -17,10 +17,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
+	"time"
 
 	"github.com/nsridhar76/go-ordersvc/internal/config"
 	"github.com/nsridhar76/go-ordersvc/internal/domain"
@@ -29,54 +32,164 @@ import (
 	"github.com/nsridhar76/go-ordersvc/internal/service"
 )
 
-// stubRepository is a temporary stub implementation
-type stubRepository struct{}
+// inMemoryRepository is a temporary in-memory implementation for testing
+type inMemoryRepository struct {
+	mu     sync.RWMutex
+	orders map[string]*domain.Order
+}
 
-func (s *stubRepository) Create(ctx context.Context, order *domain.Order) error {
+func newInMemoryRepository() *inMemoryRepository {
+	return &inMemoryRepository{
+		orders: make(map[string]*domain.Order),
+	}
+}
+
+func (r *inMemoryRepository) Create(_ context.Context, order *domain.Order) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	order.Version = 1
+	order.CreatedAt = time.Now()
+	order.UpdatedAt = time.Now()
+	r.orders[order.ID.String()] = order
 	return nil
 }
 
-func (s *stubRepository) FindByID(ctx context.Context, id string) (*domain.Order, error) {
-	return nil, domain.ErrOrderNotFound
+func (r *inMemoryRepository) FindByID(_ context.Context, id string) (*domain.Order, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	order, ok := r.orders[id]
+	if !ok || order.DeletedAt != nil {
+		return nil, domain.ErrOrderNotFound
+	}
+	// Return a copy to prevent mutation
+	copy := *order
+	return &copy, nil
 }
 
-func (s *stubRepository) Update(ctx context.Context, order *domain.Order) error {
+func (r *inMemoryRepository) Update(_ context.Context, order *domain.Order) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	existing, ok := r.orders[order.ID.String()]
+	if !ok || existing.DeletedAt != nil {
+		return domain.ErrOrderNotFound
+	}
+
+	// Check version for optimistic locking (ADR-0003)
+	if existing.Version != order.Version {
+		return domain.ErrConcurrentModification
+	}
+
+	order.Version++
+	order.UpdatedAt = time.Now()
+	r.orders[order.ID.String()] = order
 	return nil
 }
 
-func (s *stubRepository) Delete(ctx context.Context, id string) error {
+func (r *inMemoryRepository) Delete(_ context.Context, id string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	order, ok := r.orders[id]
+	if !ok || order.DeletedAt != nil {
+		return domain.ErrOrderNotFound
+	}
+
+	now := time.Now()
+	order.DeletedAt = &now
 	return nil
 }
 
-func (s *stubRepository) List(ctx context.Context, opts repository.ListOptions) ([]*domain.Order, int64, error) {
-	return []*domain.Order{}, 0, nil
+func (r *inMemoryRepository) List(_ context.Context, opts repository.ListOptions) ([]*domain.Order, int64, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var result []*domain.Order
+	for _, order := range r.orders {
+		if order.DeletedAt != nil {
+			continue
+		}
+		if opts.Status != nil && order.Status != *opts.Status {
+			continue
+		}
+		result = append(result, order)
+	}
+
+	total := int64(len(result))
+
+	// Apply pagination
+	start := opts.Offset
+	if start > len(result) {
+		start = len(result)
+	}
+	end := start + opts.Limit
+	if end > len(result) {
+		end = len(result)
+	}
+
+	return result[start:end], total, nil
 }
 
-func (s *stubRepository) FindByCustomerID(ctx context.Context, customerID string, opts repository.ListOptions) ([]*domain.Order, int64, error) {
-	return []*domain.Order{}, 0, nil
+func (r *inMemoryRepository) FindByCustomerID(_ context.Context, customerID string, opts repository.ListOptions) ([]*domain.Order, int64, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var result []*domain.Order
+	for _, order := range r.orders {
+		if order.DeletedAt != nil {
+			continue
+		}
+		if order.CustomerID != customerID {
+			continue
+		}
+		if opts.Status != nil && order.Status != *opts.Status {
+			continue
+		}
+		result = append(result, order)
+	}
+
+	total := int64(len(result))
+	return result, total, nil
+}
+
+// stubHealthChecker is a temporary stub for health checks
+type stubHealthChecker struct{}
+
+func (s *stubHealthChecker) Ping(_ context.Context) error {
+	return nil
 }
 
 // Server holds the HTTP server and its dependencies
 type Server struct {
 	httpServer *http.Server
 	cfg        *config.Config
+	logger     *slog.Logger
 }
 
 // NewServer creates a new server instance
 func NewServer(cfg *config.Config) *Server {
+	// Setup structured JSON logger
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+	slog.SetDefault(logger)
+
 	// TODO: Initialize database connection and repository
-	// For now, using mock repository
-	repo := &stubRepository{}
+	// For now, using in-memory repository for testing
+	repo := newInMemoryRepository()
+	healthChecker := &stubHealthChecker{}
 
 	// Create service
 	orderService := service.NewOrderService(repo)
 
 	// Create handlers
 	orderHandler := httpHandler.NewOrderHandler(orderService)
-	healthHandler := httpHandler.NewHealthHandler(cfg.App.Version)
+	healthHandler := httpHandler.NewHealthHandler(cfg.App.Version, healthChecker)
 
-	// Create router
-	router := httpHandler.NewRouter(orderHandler, healthHandler)
+	// Create router with logger
+	router := httpHandler.NewRouter(orderHandler, healthHandler, logger)
 
 	// Create HTTP server
 	httpServer := &http.Server{
@@ -89,12 +202,13 @@ func NewServer(cfg *config.Config) *Server {
 	return &Server{
 		httpServer: httpServer,
 		cfg:        cfg,
+		logger:     logger,
 	}
 }
 
 // Start starts the HTTP server
 func (s *Server) Start() error {
-	fmt.Printf("Starting HTTP server on port %d\n", s.cfg.Server.HTTPPort)
+	s.logger.Info("starting HTTP server", slog.Int("port", s.cfg.Server.HTTPPort))
 	if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		return fmt.Errorf("failed to start HTTP server: %w", err)
 	}
@@ -103,7 +217,7 @@ func (s *Server) Start() error {
 
 // Shutdown gracefully shuts down the server
 func (s *Server) Shutdown(ctx context.Context) error {
-	fmt.Println("Shutting down server...")
+	s.logger.Info("shutting down server")
 	return s.httpServer.Shutdown(ctx)
 }
 
@@ -114,7 +228,7 @@ func Run(cfg *config.Config) error {
 	// Start server in a goroutine
 	go func() {
 		if err := server.Start(); err != nil {
-			fmt.Printf("Server error: %v\n", err)
+			server.logger.Error("server error", slog.String("error", err.Error()))
 		}
 	}()
 

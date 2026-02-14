@@ -77,7 +77,8 @@ ADRs can define enforceable constraints using this format:
 | Number | Title | Status | Date |
 |--------|-------|--------|------|
 | 0001 | Use Clean Architecture with Handler → Service → Repository Layers | Accepted | 2026-02-14 |
-| 0002 | Use Optimistic Locking for Concurrent Updates | Accepted | 2026-02-14 |
+| 0002 | Order Details REST API Design | Accepted | 2026-02-14 |
+| 0003 | Use Optimistic Locking for Concurrent Updates | Accepted | 2026-02-14 |
 | TEMPLATE | ADR Template | - | - |
 
 ## Resources

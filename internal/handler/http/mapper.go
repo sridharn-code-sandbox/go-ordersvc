@@ -20,13 +20,15 @@ import (
 
 // MapOrderToResponse maps a domain order to HTTP response
 func MapOrderToResponse(order *domain.Order) OrderResponse {
-	items := make([]OrderItem, len(order.Items))
+	items := make([]OrderItemResponse, len(order.Items))
 	for i, item := range order.Items {
-		items[i] = OrderItem{
+		items[i] = OrderItemResponse{
+			ID:        item.ID.String(),
 			ProductID: item.ProductID,
 			Name:      item.Name,
 			Quantity:  item.Quantity,
 			Price:     item.Price,
+			Subtotal:  item.Subtotal,
 		}
 	}
 
@@ -36,9 +38,19 @@ func MapOrderToResponse(order *domain.Order) OrderResponse {
 		Items:      items,
 		Status:     string(order.Status),
 		Total:      order.Total,
+		Version:    order.Version,
 		CreatedAt:  order.CreatedAt,
 		UpdatedAt:  order.UpdatedAt,
 	}
+}
+
+// MapOrdersToResponse maps a slice of domain orders to HTTP responses
+func MapOrdersToResponse(orders []*domain.Order) []OrderResponse {
+	responses := make([]OrderResponse, len(orders))
+	for i, order := range orders {
+		responses[i] = MapOrderToResponse(order)
+	}
+	return responses
 }
 
 // MapRequestToOrderItems maps HTTP request items to domain items
@@ -50,6 +62,7 @@ func MapRequestToOrderItems(items []OrderItem) []domain.OrderItem {
 			Name:      item.Name,
 			Quantity:  item.Quantity,
 			Price:     item.Price,
+			Subtotal:  float64(item.Quantity) * item.Price,
 		}
 	}
 	return domainItems

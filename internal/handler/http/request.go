@@ -16,31 +16,24 @@ package http
 
 // CreateOrderRequest represents the request to create an order
 type CreateOrderRequest struct {
-	CustomerID string      `json:"customer_id" validate:"required,uuid"`
-	Items      []OrderItem `json:"items" validate:"required,min=1,dive"`
+	CustomerID string      `json:"customer_id"`
+	Items      []OrderItem `json:"items"`
 }
 
-// OrderItem represents an item in an order
+// OrderItem represents an item in an order request
 type OrderItem struct {
-	ProductID string  `json:"product_id" validate:"required"`
-	Name      string  `json:"name" validate:"required"`
-	Quantity  int     `json:"quantity" validate:"required,min=1"`
-	Price     float64 `json:"price" validate:"required,gt=0"`
+	ProductID string  `json:"product_id"`
+	Name      string  `json:"name"`
+	Quantity  int     `json:"quantity"`
+	Price     float64 `json:"price"`
 }
 
 // UpdateOrderRequest represents the request to update an order
 type UpdateOrderRequest struct {
-	Items []OrderItem `json:"items" validate:"required,min=1,dive"`
+	Items []OrderItem `json:"items"`
 }
 
 // UpdateStatusRequest represents the request to update order status
 type UpdateStatusRequest struct {
-	Status string `json:"status" validate:"required,oneof=pending confirmed processing shipped delivered cancelled"`
-}
-
-// ListOrdersRequest represents the request to list orders
-type ListOrdersRequest struct {
-	Page     int     `json:"page" validate:"omitempty,min=1"`
-	PageSize int     `json:"page_size" validate:"omitempty,min=1,max=100"`
-	Status   *string `json:"status" validate:"omitempty,oneof=pending confirmed processing shipped delivered cancelled"`
+	Status string `json:"status"`
 }
