@@ -80,6 +80,35 @@ func TestCreateOrder_ValidInput_ReturnsOrder(t *testing.T) {
 - gRPC services defined in `api/proto/`
 - Breaking changes require version bump in path (`/v1/` → `/v2/`)
 
+## Architecture Decision Records
+
+> **Before implementing any feature, check `docs/decisions/`**
+
+All architectural decisions are documented in `docs/decisions/` using the ADR format.
+
+### Rules
+
+1. **Check existing ADRs** before implementing any feature
+2. **Follow all CONSTRAINT rules** defined in ADRs
+3. **If a constraint conflicts** with requirements → STOP and ask user
+4. **After implementation** → Update Traceability section in relevant ADR
+
+### CONSTRAINT Format
+
+ADRs use this format for enforceable rules:
+
+```
+CONSTRAINT: [Rule description]
+BECAUSE: [Rationale]
+CHECK: [How to verify compliance]
+```
+
+### Finding Relevant ADRs
+
+- Search `docs/decisions/*.md` for keywords related to your feature
+- Pay special attention to CONSTRAINT blocks
+- Check Traceability section for related PRs/tasks
+
 ## Compact Instructions
 
 When context is compacted, preserve:
@@ -88,6 +117,7 @@ When context is compacted, preserve:
 3. Database schema decisions and migrations
 4. gRPC/protobuf service definitions
 5. Integration points with external services
+6. **Architecture Decision Records and their CONSTRAINT rules**
 
 ## Project Commands
 
@@ -116,5 +146,6 @@ When context is compacted, preserve:
 | `make k8s-deploy` | Deploy to Kubernetes |
 | `make k8s-status` | Show deployment status |
 | `make proto` | Generate protobuf/gRPC code |
-| `make ci` | Full validation (lint + sec + vuln + test + k8s-lint) |
+| `make drift-check` | Verify no config drift from ADRs |
+| `make ci` | Full validation (lint + sec + vuln + test + drift-check + k8s-lint) |
 | `make help` | Show all targets |

@@ -15,7 +15,7 @@ LDFLAGS := -ldflags "-s -w -X main.version=$(VERSION)"
 
 .PHONY: all build run clean fmt vet lint sec vuln secrets test test-integration cover \
         docker docker-push scan compose-up compose-down k8s-lint k8s-deploy k8s-status \
-        proto ci help
+        proto drift-check ci help
 
 all: build ## Default target
 
@@ -123,10 +123,22 @@ proto: ## Generate protobuf/gRPC code
 		api/proto/**/*.proto
 
 # ============================================================================
+# Architecture Validation
+# ============================================================================
+
+drift-check: ## Verify no config drift from ADRs
+	@echo "==> Running ADR constraint checks..."
+	@echo "Checking ADR-0001 CONSTRAINT: Handlers must not import database packages..."
+	@grep -r "github.com/jackc/pgx\|database/sql" internal/handler/ && \
+		{ echo "FAIL: Handler imports database packages (violates ADR-0001)"; exit 1; } || \
+		echo "PASS: No database imports in handlers"
+	@echo "==> All drift checks passed"
+
+# ============================================================================
 # CI
 # ============================================================================
 
-ci: lint sec vuln test k8s-lint ## Full validation (lint + sec + vuln + test + k8s-lint)
+ci: lint sec vuln test drift-check k8s-lint ## Full validation (lint + sec + vuln + test + drift-check + k8s-lint)
 	@echo "CI checks passed"
 
 # ============================================================================
