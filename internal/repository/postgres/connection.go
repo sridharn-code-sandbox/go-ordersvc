@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package postgres provides PostgreSQL-backed repository implementations.
 package postgres
 
 import (
@@ -26,7 +27,7 @@ type Config struct {
 	Host     string
 	Port     int
 	User     string
-	Password string
+	Password string `json:"-"` // #nosec G117 -- config field, not serialized
 	Database string
 	SSLMode  string
 }

@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package domain contains core business entities and value objects.
 package domain
 
 import "errors"
 
+// Domain errors for order operations.
 var (
 	ErrOrderNotFound          = errors.New("order not found")
 	ErrInvalidCustomerID      = errors.New("invalid customer ID")

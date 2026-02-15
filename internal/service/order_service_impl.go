@@ -16,23 +16,29 @@ package service
 
 import (
 	"context"
+	"log/slog"
 	"math"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nsridhar76/go-ordersvc/internal/cache"
 	"github.com/nsridhar76/go-ordersvc/internal/domain"
 	"github.com/nsridhar76/go-ordersvc/internal/repository"
 )
 
+const orderCacheTTL = 5 * time.Minute
+
 // orderServiceImpl implements OrderService
 type orderServiceImpl struct {
-	repo repository.OrderRepository
+	repo  repository.OrderRepository
+	cache cache.OrderCache
 }
 
 // NewOrderService creates a new OrderService
-func NewOrderService(repo repository.OrderRepository) OrderService {
+func NewOrderService(repo repository.OrderRepository, orderCache cache.OrderCache) OrderService {
 	return &orderServiceImpl{
-		repo: repo,
+		repo:  repo,
+		cache: orderCache,
 	}
 }
 
@@ -92,6 +98,16 @@ func (s *orderServiceImpl) CreateOrder(ctx context.Context, dto CreateOrderDTO) 
 }
 
 func (s *orderServiceImpl) GetOrderByID(ctx context.Context, id string) (*domain.Order, error) {
+	// Check cache first
+	if s.cache != nil {
+		cached, err := s.cache.Get(ctx, id)
+		if err != nil {
+			slog.Warn("cache get failed", slog.String("order_id", id), slog.String("error", err.Error()))
+		} else if cached != nil {
+			return cached, nil
+		}
+	}
+
 	order, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -99,6 +115,13 @@ func (s *orderServiceImpl) GetOrderByID(ctx context.Context, id string) (*domain
 
 	if order == nil {
 		return nil, domain.ErrOrderNotFound
+	}
+
+	// Populate cache
+	if s.cache != nil {
+		if err := s.cache.Set(ctx, order, orderCacheTTL); err != nil {
+			slog.Warn("cache set failed", slog.String("order_id", id), slog.String("error", err.Error()))
+		}
 	}
 
 	return order, nil
@@ -250,6 +273,13 @@ func (s *orderServiceImpl) UpdateOrderStatus(ctx context.Context, id string, new
 	// Save to repository
 	if err := s.repo.Update(ctx, order); err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache
+	if s.cache != nil {
+		if err := s.cache.Delete(ctx, id); err != nil {
+			slog.Warn("cache delete failed", slog.String("order_id", id), slog.String("error", err.Error()))
+		}
 	}
 
 	return order, nil

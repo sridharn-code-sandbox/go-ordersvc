@@ -34,12 +34,12 @@ func NewRateLimiter(client *redis.Client) cache.RateLimiter {
 	}
 }
 
-func (r *rateLimiterRedis) Allow(ctx context.Context, key string, limit int, window time.Duration) (bool, error) {
+func (r *rateLimiterRedis) Allow(_ context.Context, _ string, _ int, _ time.Duration) (bool, error) {
 	// TODO: implement
 	return true, nil
 }
 
-func (r *rateLimiterRedis) Reset(ctx context.Context, key string) error {
+func (r *rateLimiterRedis) Reset(_ context.Context, _ string) error {
 	// TODO: implement
 	return nil
 }

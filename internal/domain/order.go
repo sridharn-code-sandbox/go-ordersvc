@@ -23,6 +23,7 @@ import (
 // OrderStatus represents the current state of an order
 type OrderStatus string
 
+// Valid order statuses.
 const (
 	OrderStatusPending    OrderStatus = "pending"
 	OrderStatusConfirmed  OrderStatus = "confirmed"
