@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package http provides HTTP handlers for the order service API.
 package http
 
 import (
@@ -43,7 +44,7 @@ func NewHealthHandler(version string, dbChecker HealthChecker) *HealthHandler {
 
 // Healthz handles liveness probe GET /healthz
 // Returns 200 if server is alive
-func (h *HealthHandler) Healthz(w http.ResponseWriter, r *http.Request) {
+func (h *HealthHandler) Healthz(w http.ResponseWriter, _ *http.Request) {
 	response := HealthResponse{
 		Status:  "ok",
 		Version: h.version,

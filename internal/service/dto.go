@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package service implements business logic for order operations.
 package service
 
 import "github.com/nsridhar76/go-ordersvc/internal/domain"

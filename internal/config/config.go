@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package config provides application configuration loaded from environment variables.
 package config
 
 import (
@@ -53,7 +54,7 @@ type DatabaseConfig struct {
 	Host            string
 	Port            int
 	User            string
-	Password        string
+	Password        string `json:"-"` // #nosec G117 -- config field, not serialized
 	Database        string
 	SSLMode         string
 	MaxOpenConns    int
@@ -67,7 +68,7 @@ type DatabaseConfig struct {
 type RedisConfig struct {
 	Host        string
 	Port        int
-	Password    string
+	Password    string `json:"-"` // #nosec G117 -- config field, not serialized
 	DB          int
 	MaxRetries  int
 	PoolSize    int

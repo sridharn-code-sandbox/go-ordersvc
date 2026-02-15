@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package redis provides Redis-backed implementations of cache interfaces.
 package redis
 
 import (
@@ -26,7 +27,7 @@ import (
 type Config struct {
 	Host     string
 	Port     int
-	Password string
+	Password string `json:"-"` // #nosec G117 -- config field, not serialized
 	DB       int
 }
 

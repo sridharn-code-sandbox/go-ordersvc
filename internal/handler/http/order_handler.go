@@ -285,7 +285,7 @@ func writeError(w http.ResponseWriter, status int, message, code string) {
 		Error: message,
 		Code:  code,
 	}
-	json.NewEncoder(w).Encode(resp)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func handleServiceError(w http.ResponseWriter, err error) {

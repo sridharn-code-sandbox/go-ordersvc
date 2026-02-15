@@ -31,6 +31,7 @@ type OrderRepositoryMock struct {
 	FindByCustomerIDFunc func(ctx context.Context, customerID string, opts repository.ListOptions) ([]*domain.Order, int64, error)
 }
 
+// Create delegates to CreateFunc if set.
 func (m *OrderRepositoryMock) Create(ctx context.Context, order *domain.Order) error {
 	if m.CreateFunc != nil {
 		return m.CreateFunc(ctx, order)
@@ -38,6 +39,7 @@ func (m *OrderRepositoryMock) Create(ctx context.Context, order *domain.Order) e
 	return nil
 }
 
+// FindByID delegates to FindByIDFunc if set.
 func (m *OrderRepositoryMock) FindByID(ctx context.Context, id string) (*domain.Order, error) {
 	if m.FindByIDFunc != nil {
 		return m.FindByIDFunc(ctx, id)
@@ -45,6 +47,7 @@ func (m *OrderRepositoryMock) FindByID(ctx context.Context, id string) (*domain.
 	return nil, nil
 }
 
+// Update delegates to UpdateFunc if set.
 func (m *OrderRepositoryMock) Update(ctx context.Context, order *domain.Order) error {
 	if m.UpdateFunc != nil {
 		return m.UpdateFunc(ctx, order)
@@ -52,6 +55,7 @@ func (m *OrderRepositoryMock) Update(ctx context.Context, order *domain.Order) e
 	return nil
 }
 
+// Delete delegates to DeleteFunc if set.
 func (m *OrderRepositoryMock) Delete(ctx context.Context, id string) error {
 	if m.DeleteFunc != nil {
 		return m.DeleteFunc(ctx, id)
@@ -59,6 +63,7 @@ func (m *OrderRepositoryMock) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
+// List delegates to ListFunc if set.
 func (m *OrderRepositoryMock) List(ctx context.Context, opts repository.ListOptions) ([]*domain.Order, int64, error) {
 	if m.ListFunc != nil {
 		return m.ListFunc(ctx, opts)
@@ -66,6 +71,7 @@ func (m *OrderRepositoryMock) List(ctx context.Context, opts repository.ListOpti
 	return nil, 0, nil
 }
 
+// FindByCustomerID delegates to FindByCustomerIDFunc if set.
 func (m *OrderRepositoryMock) FindByCustomerID(ctx context.Context, customerID string, opts repository.ListOptions) ([]*domain.Order, int64, error) {
 	if m.FindByCustomerIDFunc != nil {
 		return m.FindByCustomerIDFunc(ctx, customerID, opts)
