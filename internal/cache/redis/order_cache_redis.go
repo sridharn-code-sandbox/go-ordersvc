@@ -16,6 +16,8 @@ package redis
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/nsridhar76/go-ordersvc/internal/cache"
@@ -36,21 +38,63 @@ func NewOrderCache(client *redis.Client) cache.OrderCache {
 }
 
 func (c *orderCacheRedis) Get(ctx context.Context, id string) (*domain.Order, error) {
-	// TODO: implement
-	return nil, nil
+	key := orderKey(id)
+	data, err := c.client.Get(ctx, key).Bytes()
+	if err == redis.Nil {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("cache get %s: %w", key, err)
+	}
+
+	var order domain.Order
+	if err := json.Unmarshal(data, &order); err != nil {
+		return nil, fmt.Errorf("cache unmarshal %s: %w", key, err)
+	}
+	return &order, nil
 }
 
 func (c *orderCacheRedis) Set(ctx context.Context, order *domain.Order, ttl time.Duration) error {
-	// TODO: implement
+	key := orderKey(order.ID.String())
+	data, err := json.Marshal(order)
+	if err != nil {
+		return fmt.Errorf("cache marshal %s: %w", key, err)
+	}
+
+	if err := c.client.Set(ctx, key, data, ttl).Err(); err != nil {
+		return fmt.Errorf("cache set %s: %w", key, err)
+	}
 	return nil
 }
 
 func (c *orderCacheRedis) Delete(ctx context.Context, id string) error {
-	// TODO: implement
+	key := orderKey(id)
+	if err := c.client.Del(ctx, key).Err(); err != nil {
+		return fmt.Errorf("cache del %s: %w", key, err)
+	}
 	return nil
 }
 
 func (c *orderCacheRedis) DeletePattern(ctx context.Context, pattern string) error {
-	// TODO: implement
+	var cursor uint64
+	for {
+		keys, nextCursor, err := c.client.Scan(ctx, cursor, pattern, 100).Result()
+		if err != nil {
+			return fmt.Errorf("cache scan %s: %w", pattern, err)
+		}
+		if len(keys) > 0 {
+			if err := c.client.Del(ctx, keys...).Err(); err != nil {
+				return fmt.Errorf("cache del pattern %s: %w", pattern, err)
+			}
+		}
+		cursor = nextCursor
+		if cursor == 0 {
+			break
+		}
+	}
 	return nil
+}
+
+func orderKey(id string) string {
+	return "order:" + id
 }

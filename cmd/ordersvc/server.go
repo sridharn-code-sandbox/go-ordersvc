@@ -182,7 +182,7 @@ func NewServer(cfg *config.Config) *Server {
 	healthChecker := &stubHealthChecker{}
 
 	// Create service
-	orderService := service.NewOrderService(repo)
+	orderService := service.NewOrderService(repo, nil)
 
 	// Create handlers
 	orderHandler := httpHandler.NewOrderHandler(orderService)

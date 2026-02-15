@@ -16,6 +16,8 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -78,7 +80,7 @@ func TestOrderService_CreateOrder_ValidInput_ReturnsOrder(t *testing.T) {
 				},
 			}
 
-			service := NewOrderService(mockRepo)
+			service := NewOrderService(mockRepo, nil)
 			order, err := service.CreateOrder(context.Background(), tt.dto)
 
 			if tt.wantErr != nil {
@@ -177,7 +179,7 @@ func TestOrderService_CreateOrder_InvalidInput_ReturnsError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRepo := &mocks.OrderRepositoryMock{}
-			service := NewOrderService(mockRepo)
+			service := NewOrderService(mockRepo, nil)
 
 			order, err := service.CreateOrder(context.Background(), tt.dto)
 
@@ -216,7 +218,7 @@ func TestOrderService_GetOrderByID_Found_ReturnsOrder(t *testing.T) {
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 	order, err := service.GetOrderByID(context.Background(), orderID.String())
 
 	assert.NoError(t, err)
@@ -234,7 +236,7 @@ func TestOrderService_GetOrderByID_NotFound_ReturnsError(t *testing.T) {
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 	order, err := service.GetOrderByID(context.Background(), orderID.String())
 
 	assert.Error(t, err)
@@ -297,7 +299,7 @@ func TestOrderService_ListOrders_WithPagination_ReturnsOrders(t *testing.T) {
 				},
 			}
 
-			service := NewOrderService(mockRepo)
+			service := NewOrderService(mockRepo, nil)
 			result, err := service.ListOrders(context.Background(), tt.request)
 
 			assert.NoError(t, err)
@@ -353,7 +355,7 @@ func TestOrderService_ListOrders_WithStatusFilter_ReturnsFilteredOrders(t *testi
 				},
 			}
 
-			service := NewOrderService(mockRepo)
+			service := NewOrderService(mockRepo, nil)
 			result, err := service.ListOrders(context.Background(), tt.request)
 
 			assert.NoError(t, err)
@@ -432,7 +434,7 @@ func TestOrderService_ListOrders_WithCustomerID_ReturnsFilteredOrders(t *testing
 				},
 			}
 
-			svc := NewOrderService(mockRepo)
+			svc := NewOrderService(mockRepo, nil)
 			result, err := svc.ListOrders(context.Background(), tt.request)
 
 			assert.NoError(t, err)
@@ -454,7 +456,7 @@ func TestOrderService_ListOrders_WithoutCustomerID_CallsList(t *testing.T) {
 		},
 	}
 
-	svc := NewOrderService(mockRepo)
+	svc := NewOrderService(mockRepo, nil)
 	result, err := svc.ListOrders(context.Background(), ListOrdersRequest{
 		Page:     1,
 		PageSize: 10,
@@ -472,7 +474,7 @@ func TestOrderService_ListOrders_EmptyResults_ReturnsEmptyList(t *testing.T) {
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 	result, err := service.ListOrders(context.Background(), ListOrdersRequest{
 		Page:     1,
 		PageSize: 10,
@@ -560,7 +562,7 @@ func TestOrderService_UpdateOrderStatus_ValidTransitions_Success(t *testing.T) {
 				},
 			}
 
-			service := NewOrderService(mockRepo)
+			service := NewOrderService(mockRepo, nil)
 			updatedOrder, err := service.UpdateOrderStatus(context.Background(), orderID.String(), tt.newStatus)
 
 			assert.NoError(t, err)
@@ -641,7 +643,7 @@ func TestOrderService_UpdateOrderStatus_InvalidTransitions_ReturnsError(t *testi
 				},
 			}
 
-			service := NewOrderService(mockRepo)
+			service := NewOrderService(mockRepo, nil)
 			updatedOrder, err := service.UpdateOrderStatus(context.Background(), orderID.String(), tt.newStatus)
 
 			assert.Error(t, err)
@@ -660,7 +662,7 @@ func TestOrderService_UpdateOrderStatus_OrderNotFound_ReturnsError(t *testing.T)
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 	updatedOrder, err := service.UpdateOrderStatus(context.Background(), orderID.String(), domain.OrderStatusConfirmed)
 
 	assert.Error(t, err)
@@ -753,7 +755,7 @@ func TestOrderService_UpdateOrderStatus_ConcurrentModification_ReturnsError(t *t
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 	updatedOrder, err := service.UpdateOrderStatus(context.Background(), orderID.String(), domain.OrderStatusConfirmed)
 
 	assert.Error(t, err)
@@ -794,7 +796,7 @@ func TestOrderService_UpdateOrder_ConcurrentModification_ReturnsError(t *testing
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 
 	dto := UpdateOrderDTO{
 		Items: []domain.OrderItem{
@@ -848,7 +850,7 @@ func TestOrderService_UpdateOrderStatus_VersionIncrementsOnSuccess(t *testing.T)
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 	updatedOrder, err := service.UpdateOrderStatus(context.Background(), orderID.String(), domain.OrderStatusConfirmed)
 
 	assert.NoError(t, err)
@@ -866,7 +868,7 @@ func TestOrderService_CreateOrder_SetsInitialVersion(t *testing.T) {
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 
 	dto := CreateOrderDTO{
 		CustomerID: uuid.New().String(),
@@ -924,11 +926,235 @@ func TestOrderService_UpdateOrderStatus_PreservesVersionFromRead(t *testing.T) {
 		},
 	}
 
-	service := NewOrderService(mockRepo)
+	service := NewOrderService(mockRepo, nil)
 	updatedOrder, err := service.UpdateOrderStatus(context.Background(), orderID.String(), domain.OrderStatusShipped)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, updatedOrder)
 	assert.Equal(t, 5, capturedVersion)      // Should use version from FindByID
 	assert.Equal(t, 6, updatedOrder.Version) // Should be incremented after update
+}
+
+// =============================================================================
+// Cache Tests
+// =============================================================================
+
+func TestOrderService_GetOrderByID_CacheHit_ReturnsCachedOrder(t *testing.T) {
+	orderID := uuid.New()
+	cachedOrder := &domain.Order{
+		ID:         orderID,
+		CustomerID: "customer-1",
+		Items: []domain.OrderItem{
+			{
+				ID:        uuid.New(),
+				ProductID: "product-1",
+				Name:      "Cached Product",
+				Quantity:  1,
+				Price:     10.00,
+				Subtotal:  10.00,
+			},
+		},
+		Status:    domain.OrderStatusPending,
+		Total:     10.00,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	repoCalled := false
+	mockRepo := &mocks.OrderRepositoryMock{
+		FindByIDFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			repoCalled = true
+			return nil, nil
+		},
+	}
+	mockCache := &mocks.OrderCacheMock{
+		GetFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			assert.Equal(t, orderID.String(), id)
+			return cachedOrder, nil
+		},
+	}
+
+	svc := NewOrderService(mockRepo, mockCache)
+	order, err := svc.GetOrderByID(context.Background(), orderID.String())
+
+	assert.NoError(t, err)
+	assert.Equal(t, cachedOrder, order)
+	assert.False(t, repoCalled, "repo should not be called on cache hit")
+}
+
+func TestOrderService_GetOrderByID_CacheMiss_FetchesFromRepoAndPopulatesCache(t *testing.T) {
+	orderID := uuid.New()
+	repoOrder := &domain.Order{
+		ID:         orderID,
+		CustomerID: "customer-1",
+		Items: []domain.OrderItem{
+			{
+				ID:        uuid.New(),
+				ProductID: "product-1",
+				Name:      "Repo Product",
+				Quantity:  1,
+				Price:     10.00,
+				Subtotal:  10.00,
+			},
+		},
+		Status:    domain.OrderStatusPending,
+		Total:     10.00,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	var cachedOrder *domain.Order
+	var cachedTTL time.Duration
+	mockRepo := &mocks.OrderRepositoryMock{
+		FindByIDFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			return repoOrder, nil
+		},
+	}
+	mockCache := &mocks.OrderCacheMock{
+		GetFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			return nil, nil // cache miss
+		},
+		SetFunc: func(ctx context.Context, order *domain.Order, ttl time.Duration) error {
+			cachedOrder = order
+			cachedTTL = ttl
+			return nil
+		},
+	}
+
+	svc := NewOrderService(mockRepo, mockCache)
+	order, err := svc.GetOrderByID(context.Background(), orderID.String())
+
+	assert.NoError(t, err)
+	assert.Equal(t, repoOrder, order)
+	assert.Equal(t, repoOrder, cachedOrder, "order should be cached after repo fetch")
+	assert.Equal(t, 5*time.Minute, cachedTTL, "cache TTL should be 5 minutes")
+}
+
+func TestOrderService_GetOrderByID_CacheError_FallsThrough(t *testing.T) {
+	orderID := uuid.New()
+	repoOrder := &domain.Order{
+		ID:         orderID,
+		CustomerID: "customer-1",
+		Items: []domain.OrderItem{
+			{
+				ID:        uuid.New(),
+				ProductID: "product-1",
+				Name:      "Repo Product",
+				Quantity:  1,
+				Price:     10.00,
+				Subtotal:  10.00,
+			},
+		},
+		Status:    domain.OrderStatusPending,
+		Total:     10.00,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	mockRepo := &mocks.OrderRepositoryMock{
+		FindByIDFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			return repoOrder, nil
+		},
+	}
+	mockCache := &mocks.OrderCacheMock{
+		GetFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			return nil, fmt.Errorf("redis connection refused")
+		},
+		SetFunc: func(ctx context.Context, order *domain.Order, ttl time.Duration) error {
+			return nil
+		},
+	}
+
+	svc := NewOrderService(mockRepo, mockCache)
+	order, err := svc.GetOrderByID(context.Background(), orderID.String())
+
+	assert.NoError(t, err)
+	assert.Equal(t, repoOrder, order, "should fall through to repo on cache error")
+}
+
+func TestOrderService_UpdateOrderStatus_InvalidatesCache(t *testing.T) {
+	orderID := uuid.New()
+	currentOrder := &domain.Order{
+		ID:         orderID,
+		CustomerID: "customer-1",
+		Items: []domain.OrderItem{
+			{
+				ID:        uuid.New(),
+				ProductID: "product-1",
+				Name:      "Test Product",
+				Quantity:  1,
+				Price:     10.00,
+				Subtotal:  10.00,
+			},
+		},
+		Status:    domain.OrderStatusPending,
+		Total:     10.00,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	var deletedID string
+	mockRepo := &mocks.OrderRepositoryMock{
+		FindByIDFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			return currentOrder, nil
+		},
+		UpdateFunc: func(ctx context.Context, order *domain.Order) error {
+			return nil
+		},
+	}
+	mockCache := &mocks.OrderCacheMock{
+		DeleteFunc: func(ctx context.Context, id string) error {
+			deletedID = id
+			return nil
+		},
+	}
+
+	svc := NewOrderService(mockRepo, mockCache)
+	_, err := svc.UpdateOrderStatus(context.Background(), orderID.String(), domain.OrderStatusConfirmed)
+
+	assert.NoError(t, err)
+	assert.Equal(t, orderID.String(), deletedID, "cache should be invalidated after status update")
+}
+
+func TestOrderService_UpdateOrderStatus_CacheDeleteError_NonFatal(t *testing.T) {
+	orderID := uuid.New()
+	currentOrder := &domain.Order{
+		ID:         orderID,
+		CustomerID: "customer-1",
+		Items: []domain.OrderItem{
+			{
+				ID:        uuid.New(),
+				ProductID: "product-1",
+				Name:      "Test Product",
+				Quantity:  1,
+				Price:     10.00,
+				Subtotal:  10.00,
+			},
+		},
+		Status:    domain.OrderStatusPending,
+		Total:     10.00,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	mockRepo := &mocks.OrderRepositoryMock{
+		FindByIDFunc: func(ctx context.Context, id string) (*domain.Order, error) {
+			return currentOrder, nil
+		},
+		UpdateFunc: func(ctx context.Context, order *domain.Order) error {
+			return nil
+		},
+	}
+	mockCache := &mocks.OrderCacheMock{
+		DeleteFunc: func(ctx context.Context, id string) error {
+			return errors.New("redis timeout")
+		},
+	}
+
+	svc := NewOrderService(mockRepo, mockCache)
+	order, err := svc.UpdateOrderStatus(context.Background(), orderID.String(), domain.OrderStatusConfirmed)
+
+	assert.NoError(t, err, "cache delete error should not fail the update")
+	assert.NotNil(t, order)
+	assert.Equal(t, domain.OrderStatusConfirmed, order.Status)
 }
