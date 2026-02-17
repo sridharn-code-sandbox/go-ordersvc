@@ -3,6 +3,7 @@ package kafka
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"time"
 
 	"github.com/nsridhar76/go-ordersvc/internal/domain"
@@ -10,9 +11,15 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+// messageWriter abstracts kafka.Writer for testability.
+type messageWriter interface {
+	WriteMessages(ctx context.Context, msgs ...kafka.Message) error
+	io.Closer
+}
+
 // Publisher implements service.EventPublisher using Kafka.
 type Publisher struct {
-	writer *kafka.Writer
+	writer messageWriter
 	topic  string
 }
 

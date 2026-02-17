@@ -71,7 +71,7 @@ config:
   redisHost: ordersvc-redis
   redisPort: "6379"
   redisDB: "0"
-  kafkaBrokers: ""
+  kafkaBrokers: ordersvc-kafka:9092
   kafkaTopic: order-events
   kafkaGroupID: ordersvc
 
@@ -116,6 +116,22 @@ redis:
     requests:
       cpu: 50m
       memory: 64Mi
+
+# -- Kafka StatefulSet (KRaft mode, single broker for dev)
+kafka:
+  enabled: true
+  image: apache/kafka:3.7.0
+  pullPolicy: IfNotPresent
+  clusterId: MkU3OEVBNTcwNTJENDM2Qk
+  persistence:
+    size: 1Gi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
 
 # -- Frontend (React order-ui served by nginx)
 frontend:
