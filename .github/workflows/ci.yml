@@ -30,13 +30,12 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
-          args: "--version"
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh \
+            | sh -s -- -b "$(go env GOPATH)/bin"
 
       - name: make lint
-        run: make lint
+        run: make lint GOARCH= GOOS=
 
   # ---------------------------------------------------------------------------
   # Security
@@ -51,17 +50,24 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      - name: Install security tools
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Install gitleaks
         run: |
-          go install github.com/securego/gosec/v2/cmd/gosec@latest
-          go install golang.org/x/vuln/cmd/govulncheck@latest
-          go install github.com/zricethezav/gitleaks/v8/cmd/gitleaks@latest
+          GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+            | grep '"tag_name"' | cut -d '"' -f 4)
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION#v}_linux_x64.tar.gz" \
+            | tar xz -C /usr/local/bin gitleaks
 
       - name: make sec
-        run: make sec
+        run: make sec GOARCH= GOOS=
 
       - name: make vuln
-        run: make vuln
+        run: make vuln GOARCH= GOOS=
 
       - name: make secrets
         run: make secrets
@@ -80,10 +86,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: make test
-        run: make test
-        env:
-          GOARCH: ""
-          GOOS: ""
+        run: make test GOARCH= GOOS=
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
