@@ -15,7 +15,8 @@ LDFLAGS := -ldflags "-s -w -X main.version=$(VERSION)"
 
 .PHONY: all build run clean fmt vet lint sec vuln secrets test test-integration cover \
         docker docker-push scan compose-up compose-down compose-logs k8s-lint k8s-deploy k8s-status \
-        proto drift-check ci help
+        proto drift-check ci help \
+        frontend-install frontend-build frontend-dev frontend-lint docker-ui docker-ui-push
 
 all: build ## Default target
 
@@ -30,7 +31,7 @@ run: build ## Run the service locally
 	./bin/$(BINARY_NAME)
 
 clean: ## Remove build artifacts
-	rm -rf bin/ $(COVERAGE_FILE)
+	rm -rf bin/ $(COVERAGE_FILE) web/order-ui/dist
 	go clean -cache -testcache
 
 # ============================================================================
@@ -129,6 +130,32 @@ proto: ## Generate protobuf/gRPC code
 		api/proto/**/*.proto
 
 # ============================================================================
+# Frontend
+# ============================================================================
+
+frontend-install: ## Install frontend dependencies
+	cd web/order-ui && npm ci
+
+frontend-build: frontend-install ## Build frontend for production
+	cd web/order-ui && npm run build
+
+frontend-dev: frontend-install ## Start frontend dev server
+	cd web/order-ui && npm run dev
+
+frontend-lint: frontend-install ## Lint frontend code
+	cd web/order-ui && npm run lint
+
+# ============================================================================
+# Docker (Frontend)
+# ============================================================================
+
+docker-ui: ## Build frontend Docker image (ARM64)
+	docker build --platform linux/arm64 -f web/order-ui/Dockerfile -t $(REGISTRY)/order-ui:$(VERSION) web/order-ui
+
+docker-ui-push: ## Push frontend image to ghcr.io
+	docker push $(REGISTRY)/order-ui:$(VERSION)
+
+# ============================================================================
 # Architecture Validation
 # ============================================================================
 
@@ -176,7 +203,7 @@ drift-check: ## Verify no config drift from ADRs
 # CI
 # ============================================================================
 
-ci: lint sec vuln test drift-check k8s-lint ## Full validation (lint + sec + vuln + test + drift-check + k8s-lint)
+ci: lint sec vuln test drift-check k8s-lint frontend-lint ## Full validation (lint + sec + vuln + test + drift-check + k8s-lint + frontend-lint)
 	@echo "CI checks passed"
 
 # ============================================================================

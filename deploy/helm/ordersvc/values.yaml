@@ -8,6 +8,19 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+ingress:
+  enabled: false
+  className: nginx
+  host: ordersvc.local
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+  tls: []
+  #  - secretName: ordersvc-tls
+  #    hosts:
+  #      - ordersvc.local
+
 service:
   type: ClusterIP
   port: 8080
@@ -103,3 +116,22 @@ redis:
     requests:
       cpu: 50m
       memory: 64Mi
+
+# -- Frontend (React order-ui served by nginx)
+frontend:
+  enabled: false
+  image:
+    repository: ghcr.io/nsridhar76/order-ui
+    pullPolicy: IfNotPresent
+    tag: "dev"
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 100m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 32Mi
