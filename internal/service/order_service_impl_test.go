@@ -75,7 +75,8 @@ func TestOrderService_CreateOrder_ValidInput_ReturnsOrder(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRepo := &mocks.OrderRepositoryMock{
-				CreateFunc: func(_ context.Context, _ *domain.Order) error {					return nil
+				CreateFunc: func(_ context.Context, _ *domain.Order) error {
+					return nil
 				},
 			}
 

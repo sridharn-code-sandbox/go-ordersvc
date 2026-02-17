@@ -42,8 +42,8 @@ type OrderItem struct {
 }
 
 type OrderResponse struct {
-	ID         string  `json:"id"`
-	CustomerID string  `json:"customer_id"`
+	ID         string `json:"id"`
+	CustomerID string `json:"customer_id"`
 	Items      []struct {
 		ID        string  `json:"id"`
 		ProductID string  `json:"product_id"`
