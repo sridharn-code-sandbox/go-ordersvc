@@ -2,7 +2,7 @@
 
 **Go · Kubernetes · Docker · GitHub · Mac M4**
 
-*A stepwise  plan to exercise all [16 cookbook recipes](Claude_Code_cookbook.md) against a real Go microservice project.*
+*A stepwise  plan to exercise all [16 cookbook recipes](Claude_Code_Cookbook.md) against a real Go microservice project.*
 
 *Makefile-centric • CI tools for audits • Claude for architecture • ADRs for decisions*
 
@@ -313,7 +313,7 @@ claude
 
 *Recipes #01, #02, #03, #04*
 
-### ⭐ Block 1.1 — CLAUDE.md + Makefile + Doc Scaffolding ([Recipe #01](Claude_Code_cookbook.md))
+### ⭐ Block 1.1 — CLAUDE.md + Makefile + Doc Scaffolding ([Recipe #01](Claude_Code_Cookbook.md))
 
 *Goal: Claude knows your project, your Makefile is the command contract, and docs/decisions/ is ready.*
 
@@ -376,7 +376,7 @@ ls .claude/skills/    # should show refine/ and drift/
 
 ---
 
-### ⭐ Block 1.2 — Plan Before You Build ([Recipe #02](Claude_Code_cookbook.md))
+### ⭐ Block 1.2 — Plan Before You Build ([Recipe #02](Claude_Code_Cookbook.md))
 
 *Goal: Architect the service before writing code.*
 
@@ -456,7 +456,7 @@ cat docs/decisions/ADR-0001-clean-architecture.md
 
 ---
 
-### ⭐ Block 1.3 — Test-Driven Everything ([Recipe #03](Claude_Code_cookbook.md))
+### ⭐ Block 1.3 — Test-Driven Everything ([Recipe #03](Claude_Code_Cookbook.md))
 
 *Goal: Tests exist before implementation. `make test` is the feedback loop.*
 
@@ -480,7 +480,7 @@ Run 'make test' to verify.
 
 ---
 
-### Block 1.4 — Model Switching ([Recipe #04](Claude_Code_cookbook.md))
+### Block 1.4 — Model Switching ([Recipe #04](Claude_Code_Cookbook.md))
 
 *Goal: Feel the cost/quality trade-off.*
 
@@ -563,7 +563,7 @@ make drift-check     # verify new constraints added
 
 ---
 
-### ⭐ Block 2.1 — REST API + Docker ([Recipe #08](Claude_Code_cookbook.md): Acceptance Criteria)
+### ⭐ Block 2.1 — REST API + Docker ([Recipe #08](Claude_Code_Cookbook.md): Acceptance Criteria)
 
 *Goal: Implement the feature per ADR-0002 constraints.*
 
@@ -593,7 +593,7 @@ Verify with: make test && make docker && make drift-check
 
 ---
 
-### Block 2.2 — Visual Debugging ([Recipe #05](Claude_Code_cookbook.md))
+### Block 2.2 — Visual Debugging ([Recipe #05](Claude_Code_Cookbook.md))
 
 *Goal: Screenshot-driven fix.*
 
@@ -606,7 +606,7 @@ Add graceful error handling instead of a panic. Then make test.
 
 ---
 
-### ⭐ Block 2.3 — PR Automation + docker-compose ([Recipe #06](Claude_Code_cookbook.md))
+### ⭐ Block 2.3 — PR Automation + docker-compose ([Recipe #06](Claude_Code_Cookbook.md))
 
 *Goal: Claude creates branch, docker-compose, PR.*
 
@@ -629,7 +629,7 @@ Commit and create a PR. Include in the PR description:
 
 ---
 
-### 📝 Block 2.4 — Generated Docs + ADR Update ([Recipe #07](Claude_Code_cookbook.md))
+### 📝 Block 2.4 — Generated Docs + ADR Update ([Recipe #07](Claude_Code_Cookbook.md))
 
 *Goal: Docs generated. ADR-0002 updated with actual PR number.*
 
@@ -663,7 +663,7 @@ gh pr merge --squash && git checkout main && git pull
 
 *Recipes #09, #10, #11, #12*
 
-### ⭐ Block 3.1 — Skills Including /drift ([Recipe #10](Claude_Code_cookbook.md))
+### ⭐ Block 3.1 — Skills Including /drift ([Recipe #10](Claude_Code_Cookbook.md))
 
 *Goal: Reusable skills that complement Makefile tools, including /drift for ADR compliance.*
 
@@ -697,7 +697,7 @@ Then test the /drift skill against your existing ADRs:
 
 ---
 
-### ⭐ Block 3.2 — Deploy to K8s ([Recipe #08](Claude_Code_cookbook.md) + [#10](Claude_Code_cookbook.md))
+### ⭐ Block 3.2 — Deploy to K8s ([Recipe #08](Claude_Code_Cookbook.md) + [#10](Claude_Code_Cookbook.md))
 
 *Goal: Service on Docker Desktop K8s.*
 
@@ -729,7 +729,7 @@ make k8s-status
 
 ---
 
-### Block 3.3 — Parallel Feature Dev ([Recipe #09](Claude_Code_cookbook.md))
+### Block 3.3 — Parallel Feature Dev ([Recipe #09](Claude_Code_Cookbook.md))
 
 *Goal: Two features, two worktrees, simultaneous.*
 
@@ -801,7 +801,7 @@ make drift-check     # now checks ADR-0001 through ADR-0004
 
 ---
 
-### Block 3.4 — Sub-agents + MCP ([Recipes #11, #12](Claude_Code_cookbook.md))
+### Block 3.4 — Sub-agents + MCP ([Recipes #11, #12](Claude_Code_Cookbook.md))
 
 *Goal: Claude reviews architecture. Tools handle the rest.*
 
@@ -859,7 +859,7 @@ git push origin main
 
 *Recipes #13, #14, #15, #16*
 
-### ⭐ Block 4.1 — Checkpoints ([Recipe #13](Claude_Code_cookbook.md))
+### ⭐ Block 4.1 — Checkpoints ([Recipe #13](Claude_Code_Cookbook.md))
 
 *Goal: Experiment boldly, rewind safely.*
 
@@ -882,7 +882,7 @@ make test && make drift-check
 
 ---
 
-### ⭐ Block 4.2 — Hooks + Drift Enforcement ([Recipe #14](Claude_Code_cookbook.md))
+### ⭐ Block 4.2 — Hooks + Drift Enforcement ([Recipe #14](Claude_Code_Cookbook.md))
 
 *Goal: Hooks call Makefile targets including drift-check.*
 
@@ -955,7 +955,7 @@ make drift-check    # should pass again
 
 ---
 
-### Block 4.3 — Context Management ([Recipe #15](Claude_Code_cookbook.md))
+### Block 4.3 — Context Management ([Recipe #15](Claude_Code_Cookbook.md))
 
 *Goal: Understand and control your context budget.*
 
@@ -976,7 +976,7 @@ constraint about 404 vs 500 responses.
 
 ---
 
-### Block 4.4 — Plugins ([Recipe #16](Claude_Code_cookbook.md))
+### Block 4.4 — Plugins ([Recipe #16](Claude_Code_Cookbook.md))
 
 *Goal: Understand your setup is already shareable.*
 
