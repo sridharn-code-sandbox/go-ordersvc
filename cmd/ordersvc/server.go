@@ -25,14 +25,14 @@ import (
 	"syscall"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/nsridhar76/go-ordersvc/internal/cache/redis"
-	"github.com/nsridhar76/go-ordersvc/internal/config"
-	grpcHandler "github.com/nsridhar76/go-ordersvc/internal/handler/grpc"
-	httpHandler "github.com/nsridhar76/go-ordersvc/internal/handler/http"
-	kafkapub "github.com/nsridhar76/go-ordersvc/internal/messaging/kafka"
-	"github.com/nsridhar76/go-ordersvc/internal/messaging/noop"
-	"github.com/nsridhar76/go-ordersvc/internal/repository/postgres"
-	"github.com/nsridhar76/go-ordersvc/internal/service"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/cache/redis"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/config"
+	grpcHandler "github.com/sridharn-code-sandbox/go-ordersvc/internal/handler/grpc"
+	httpHandler "github.com/sridharn-code-sandbox/go-ordersvc/internal/handler/http"
+	kafkapub "github.com/sridharn-code-sandbox/go-ordersvc/internal/messaging/kafka"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/messaging/noop"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/repository/postgres"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/service"
 	"google.golang.org/grpc"
 )
 

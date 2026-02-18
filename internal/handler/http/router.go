@@ -19,7 +19,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	"github.com/nsridhar76/go-ordersvc/internal/middleware"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/middleware"
 )
 
 // NewRouter creates a new Chi router with all routes configured

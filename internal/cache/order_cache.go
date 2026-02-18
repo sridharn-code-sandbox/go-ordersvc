@@ -19,7 +19,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // OrderCache defines caching operations for orders

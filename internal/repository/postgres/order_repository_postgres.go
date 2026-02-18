@@ -22,8 +22,8 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
-	"github.com/nsridhar76/go-ordersvc/internal/repository"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/repository"
 )
 
 // orderRepositoryPostgres implements OrderRepository using PostgreSQL

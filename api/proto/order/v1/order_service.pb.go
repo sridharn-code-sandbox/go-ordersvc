@@ -7,13 +7,12 @@
 package orderv1
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -656,7 +655,7 @@ const file_api_proto_order_v1_order_service_proto_rawDesc = "" +
 	"\bGetOrder\x12\x19.order.v1.GetOrderRequest\x1a\x1a.order.v1.GetOrderResponse\x12G\n" +
 	"\n" +
 	"ListOrders\x12\x1b.order.v1.ListOrdersRequest\x1a\x1c.order.v1.ListOrdersResponse\x12C\n" +
-	"\vWatchOrders\x12\x1c.order.v1.WatchOrdersRequest\x1a\x14.order.v1.OrderEvent0\x01B>Z<github.com/nsridhar76/go-ordersvc/api/proto/order/v1;orderv1b\x06proto3"
+	"\vWatchOrders\x12\x1c.order.v1.WatchOrdersRequest\x1a\x14.order.v1.OrderEvent0\x01BIZGgithub.com/sridharn-code-sandbox/go-ordersvc/api/proto/order/v1;orderv1b\x06proto3"
 
 var (
 	file_api_proto_order_v1_order_service_proto_rawDescOnce sync.Once

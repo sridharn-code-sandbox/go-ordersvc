@@ -15,7 +15,7 @@
 // Package service implements business logic for order operations.
 package service
 
-import "github.com/nsridhar76/go-ordersvc/internal/domain"
+import "github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 
 // CreateOrderDTO represents data for creating an order
 type CreateOrderDTO struct {

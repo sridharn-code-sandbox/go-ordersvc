@@ -4,7 +4,7 @@ package noop
 import (
 	"context"
 
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // Publisher is a no-op EventPublisher used when Kafka is not configured.

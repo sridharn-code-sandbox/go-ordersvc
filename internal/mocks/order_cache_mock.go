@@ -19,7 +19,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // OrderCacheMock is a mock implementation of OrderCache

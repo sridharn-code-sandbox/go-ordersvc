@@ -22,8 +22,8 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
-	"github.com/nsridhar76/go-ordersvc/internal/service"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/service"
 )
 
 const (

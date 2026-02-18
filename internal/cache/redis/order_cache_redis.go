@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nsridhar76/go-ordersvc/internal/cache"
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/cache"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 	"github.com/redis/go-redis/v9"
 )
 

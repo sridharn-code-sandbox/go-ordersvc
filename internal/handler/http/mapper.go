@@ -15,7 +15,7 @@
 package http //nolint:revive // intentional package name matching handler layer
 
 import (
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // MapOrderToResponse maps a domain order to HTTP response

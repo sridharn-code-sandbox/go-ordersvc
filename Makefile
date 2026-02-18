@@ -1,8 +1,8 @@
 # go-ordersvc Makefile
 
 BINARY_NAME := ordersvc
-MODULE := github.com/nsridhar76/go-ordersvc
-REGISTRY ?= ghcr.io/nsridhar76
+MODULE := github.com/sridharn-code-sandbox/go-ordersvc
+REGISTRY ?= ghcr.io/sridharn-code-sandbox
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COVERAGE_FILE := coverage.out
 

@@ -18,7 +18,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/nsridhar76/go-ordersvc/internal/cache"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/cache"
 	"github.com/redis/go-redis/v9"
 )
 

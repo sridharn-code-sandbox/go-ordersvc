@@ -160,7 +160,7 @@ version INTEGER  -- Nullable!
 
 ### Related Work
 - **Jira Ticket:** [PROJ-001](https://jira.example.com/PROJ-001) - "Prevent race conditions in order updates"
-- **Pull Request:** [#2](https://github.com/nsridhar76/go-ordersvc/pull/2) (day 1 commit)
+- **Pull Request:** [#2](https://github.com/sridharn-code-sandbox/go-ordersvc/pull/2) (day 1 commit)
 - **Parent ADR:** ADR-0001 (Clean Architecture)
 - **Related ADRs:** Builds on layer separation from ADR-0001
 

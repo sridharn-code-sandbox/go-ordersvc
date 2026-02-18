@@ -253,7 +253,7 @@ r.Group(func(r chi.Router) {
 
 ### Related Work
 - **Jira Ticket:** N/A (foundational API design)
-- **Pull Request:** [#1](https://github.com/nsridhar76/go-ordersvc/pull/1) - feat(docker): add docker-compose stack with integration tests
+- **Pull Request:** [#1](https://github.com/sridharn-code-sandbox/go-ordersvc/pull/1) - feat(docker): add docker-compose stack with integration tests
 - **Parent ADR:** ADR-0001 (Clean Architecture)
 - **Related ADRs:** ADR-0003 (Optimistic Locking for 409 responses)
 

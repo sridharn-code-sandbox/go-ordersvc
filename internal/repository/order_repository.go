@@ -18,7 +18,7 @@ package repository
 import (
 	"context"
 
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // OrderRepository defines data access operations for orders

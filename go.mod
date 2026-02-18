@@ -1,4 +1,4 @@
-module github.com/nsridhar76/go-ordersvc
+module github.com/sridharn-code-sandbox/go-ordersvc
 
 go 1.24.0
 

@@ -2,8 +2,8 @@
 package grpc
 
 import (
-	orderv1 "github.com/nsridhar76/go-ordersvc/api/proto/order/v1"
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	orderv1 "github.com/sridharn-code-sandbox/go-ordersvc/api/proto/order/v1"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

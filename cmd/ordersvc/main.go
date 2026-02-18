@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nsridhar76/go-ordersvc/internal/config"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/config"
 )
 
 var version = "dev"

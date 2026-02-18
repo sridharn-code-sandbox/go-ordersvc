@@ -87,7 +87,7 @@ The order details feature (ADR-0002) queries PostgreSQL on every `GET /api/v1/or
 // Good: Service layer owns caching
 package service
 
-import "github.com/nsridhar76/go-ordersvc/internal/cache"
+import "github.com/sridharn-code-sandbox/go-ordersvc/internal/cache"
 
 type orderServiceImpl struct {
     repo  repository.OrderRepository
@@ -97,7 +97,7 @@ type orderServiceImpl struct {
 // Bad: Handler importing cache directly
 package http
 
-import "github.com/nsridhar76/go-ordersvc/internal/cache/redis"
+import "github.com/sridharn-code-sandbox/go-ordersvc/internal/cache/redis"
 
 type OrderHandler struct {
     cache *redis.OrderCache // Handler should not know about caching!

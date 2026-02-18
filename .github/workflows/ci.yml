@@ -12,7 +12,7 @@ permissions:
 
 env:
   GO_VERSION: "1.24"
-  REGISTRY: ghcr.io/nsridhar76
+  REGISTRY: ghcr.io/sridharn-code-sandbox
   IMAGE_NAME: ordersvc
 
 jobs:

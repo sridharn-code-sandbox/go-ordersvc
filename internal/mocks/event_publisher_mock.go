@@ -3,7 +3,7 @@ package mocks
 import (
 	"context"
 
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // EventPublisherMock is a mock implementation of EventPublisher

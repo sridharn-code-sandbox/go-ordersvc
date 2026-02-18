@@ -21,9 +21,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/nsridhar76/go-ordersvc/internal/cache"
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
-	"github.com/nsridhar76/go-ordersvc/internal/repository"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/cache"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/repository"
 )
 
 const orderCacheTTL = 5 * time.Minute

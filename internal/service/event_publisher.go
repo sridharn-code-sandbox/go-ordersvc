@@ -17,7 +17,7 @@ package service
 import (
 	"context"
 
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // EventPublisher publishes domain events to Kafka

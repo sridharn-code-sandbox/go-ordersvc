@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/nsridhar76/go-ordersvc/internal/messaging"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/messaging"
 	"github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

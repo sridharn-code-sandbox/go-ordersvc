@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
-	"github.com/nsridhar76/go-ordersvc/internal/mocks"
-	"github.com/nsridhar76/go-ordersvc/internal/repository"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/mocks"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/repository"
 	"github.com/stretchr/testify/assert"
 )
 

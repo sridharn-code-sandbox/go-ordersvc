@@ -99,7 +99,7 @@ The slight increase in verbosity (interfaces, mappers) is offset by:
 package http
 
 import (
-    "github.com/nsridhar76/go-ordersvc/internal/service"
+    "github.com/sridharn-code-sandbox/go-ordersvc/internal/service"
 )
 
 type OrderHandler struct {
@@ -111,7 +111,7 @@ package http
 
 import (
     "github.com/jackc/pgx/v5/pgxpool"
-    "github.com/nsridhar76/go-ordersvc/internal/repository/postgres"
+    "github.com/sridharn-code-sandbox/go-ordersvc/internal/repository/postgres"
 )
 
 type OrderHandler struct {
@@ -130,7 +130,7 @@ type OrderHandler struct {
 package service
 
 import (
-    "github.com/nsridhar76/go-ordersvc/internal/repository"
+    "github.com/sridharn-code-sandbox/go-ordersvc/internal/repository"
 )
 
 type orderServiceImpl struct {
@@ -141,7 +141,7 @@ type orderServiceImpl struct {
 package service
 
 import (
-    "github.com/nsridhar76/go-ordersvc/internal/repository/postgres"
+    "github.com/sridharn-code-sandbox/go-ordersvc/internal/repository/postgres"
 )
 
 type orderServiceImpl struct {
@@ -161,7 +161,7 @@ package postgres
 
 import (
     "github.com/jackc/pgx/v5/pgxpool"
-    "github.com/nsridhar76/go-ordersvc/internal/domain"
+    "github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 type OrderRepository struct {
@@ -172,7 +172,7 @@ type OrderRepository struct {
 package postgres
 
 import (
-    "github.com/nsridhar76/go-ordersvc/internal/service"
+    "github.com/sridharn-code-sandbox/go-ordersvc/internal/service"
 )
 
 type OrderRepository struct {
@@ -208,7 +208,7 @@ type OrderRepository struct {
 
 ### Related Work
 - **Jira Ticket:** N/A (foundational architectural decision)
-- **Pull Request:** [#2](https://github.com/nsridhar76/go-ordersvc/pull/2) (day 1 commit e45cc2a)
+- **Pull Request:** [#2](https://github.com/sridharn-code-sandbox/go-ordersvc/pull/2) (day 1 commit e45cc2a)
 - **Parent ADR:** N/A (foundational decision)
 - **Related ADRs:** ADR-0002 (Optimistic Locking)
 

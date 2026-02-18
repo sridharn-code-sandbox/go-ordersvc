@@ -17,7 +17,7 @@ package service
 import (
 	"context"
 
-	"github.com/nsridhar76/go-ordersvc/internal/domain"
+	"github.com/sridharn-code-sandbox/go-ordersvc/internal/domain"
 )
 
 // OrderService defines business logic operations for orders
